@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PID - Plano de Incentivo ao Dealer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #192218;
+            color: #fff;
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Anton', sans-serif;
+            color: #d4a121;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #192218 0%, #2a3a2a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '♠ ♥ ♦ ♣';
+            position: absolute;
+            font-size: 150px;
+            opacity: 0.05;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: #ccc;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background-color: #d4a121;
+            color: #192218;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 50px;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(212, 161, 33, 0.3);
+        }
+
+        .btn:hover {
+            background-color: #f0b929;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(212, 161, 33, 0.5);
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 60px 20px;
+            border-bottom: 1px solid #2a3a2a;
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .section p {
+            font-size: 1.1rem;
+            color: #ddd;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            text-align: center;
+        }
+
+        /* Chart Section */
+        .chart-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #243329;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        canvas {
+            max-height: 400px;
+        }
+
+        /* Bonus Gold Section */
+        .bonus-gold {
+            background: linear-gradient(135deg, #d4a121 0%, #f0b929 100%);
+            color: #192218;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 40px auto;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(212, 161, 33, 0.4);
+        }
+
+        .bonus-gold h3 {
+            color: #192218;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .bonus-gold .total {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        /* Benefits Grid */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .benefit-card {
+            background-color: #243329;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+            border: 2px solid #2a3a2a;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            border-color: #d4a121;
+        }
+
+        .benefit-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .benefit-card h4 {
+            color: #d4a121;
+            margin-bottom: 10px;
+            font-family: 'Anton', sans-serif;
+        }
+
+        /* Rules Section */
+        .rules-box {
+            background-color: #3d2a1f;
+            border-left: 5px solid #d4a121;
+            padding: 30px;
+            margin: 30px auto;
+            max-width: 800px;
+            border-radius: 10px;
+        }
+
+        .rules-box h3 {
+            margin-bottom: 20px;
+        }
+
+        .rules-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .rules-box li {
+            padding: 10px 0;
+            border-bottom: 1px solid #4a3a2a;
+        }
+
+        .rules-box li:last-child {
+            border-bottom: none;
+        }
+
+        /* WhatsApp Button */
+        .whatsapp-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25D366;
+            color: white;
+            padding: 18px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .whatsapp-btn:hover {
+            background-color: #20BA5A;
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.6);
+        }
+
+        .whatsapp-icon {
+            width: 30px;
+            height: 30px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #0f1612;
+            color: #888;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="container">
+            <img src="logo pdq.png" alt="Poker de Quinta" class="logo" style="max-width: 250px; margin-bottom: 30px;">
+            <h1>PID</h1>
+            <p>Plano de Incentivo ao Dealer</p>
+            <p style="font-size: 1.2rem;">Sua fidelidade vale ouro. Cresça conosco a cada etapa!</p>
+            <a href="#grafico" class="btn">Conheça o Plano</a>
+        </div>
+    </div>
+
+    <!-- O Que é o PID -->
+    <div class="section">
+        <div class="container">
+            <h2>O QUE É O PID?</h2>
+            <p>O PID é um plano revolucionário que recompensa a fidelidade e profissionalismo dos dealers. Diferente de uma diária fixa, oferecemos crescimento progressivo ao longo de 13 etapas. Quanto mais presente e pontual você for, maior será sua remuneração.</p>
+        </div>
+    </div>
+
+    <!-- Quem Somos -->
+    <div class="section" style="background-color: #1a2520;">
+        <div class="container">
+            <h2>QUEM SOMOS - POKER DE QUINTA</h2>
+            <p>Desde 2015, o Poker de Quinta reúne amigos para uma "bagunça organizada" com seriedade técnica. Valorizamos o respeito às regras e aos profissionais. Aqui você faz parte da família, janta conosco e é peça fundamental para a diversão fluir.</p>
+        </div>
+    </div>
+
+    <!-- Gráfico de Progressão -->
+    <div class="section" id="grafico">
+        <div class="container">
+            <h2>EVOLUÇÃO DA REMUNERAÇÃO</h2>
+            <p>Acompanhe o crescimento da sua diária ao longo das 13 etapas</p>
+            <div class="chart-container">
+                <canvas id="progressionChart"></canvas>
+            </div>
+            <p style="text-align: center; margin-top: 30px; font-size: 1.3rem; color: #d4a121;">
+                <strong>Crescimento Total: +75%</strong> (de R$ 180 para R$ 315)
+            </p>
+        </div>
+    </div>
+
+    <!-- Bônus Gold -->
+    <div class="section">
+        <div class="container">
+            <div class="bonus-gold">
+                <h3>🏆 BÔNUS GOLD 🏆</h3>
+                <p style="font-size: 1.2rem; color: #192218;">Complete as 13 etapas sem faltas e receba <strong>R$ 200,00 extras</strong> na última mesa!</p>
+                <div class="total">
+                    Total na Temporada: R$ 3.495,00
+                </div>
+                <p style="margin-top: 10px; color: #192218;">(R$ 3.295,00 + Bônus R$ 200,00)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Benefícios -->
+    <div class="section" style="background-color: #1a2520;">
+        <div class="container">
+            <h2>BENEFÍCIOS DE SER FIEL</h2>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="icon">📈</div>
+                    <h4>Remuneração Escalável</h4>
+                    <p>Quanto mais etapas, mais você ganha</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">💰</div>
+                    <h4>Crescimento Real</h4>
+                    <p>+75% de aumento na temporada</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">🏆</div>
+                    <h4>Bônus Gold</h4>
+                    <p>R$ 200 extras por assiduidade 100%</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">🍽️</div>
+                    <h4>Janta Inclusa</h4>
+                    <p>Confraternização com os jogadores</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">⚖️</div>
+                    <h4>Respeito Total</h4>
+                    <p>Autoridade máxima na mesa</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">💳</div>
+                    <h4>Pagamento Imediato</h4>
+                    <p>Via PIX ao final da noite</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">🛡️</div>
+                    <h4>Ambiente Profissional</h4>
+                    <p>Zero tolerância a desrespeito</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">⏸️</div>
+                    <h4>Intervalo Flexível</h4>
+                    <p>5 minutos após troca de mesa</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">🥤</div>
+                    <h4>Bebidas Inclusas</h4>
+                    <p>Bebidas sem álcool à vontade com parcimônia</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Regras de Manutenção -->
+    <div class="section">
+        <div class="container">
+            <h2>REGRAS DE MANUTENÇÃO</h2>
+            <div class="rules-box">
+                <h3>⚠️ Regra do Zero</h3>
+                <ul>
+                    <li><strong>Qualquer falta</strong> = Reset para R$ 180,00</li>
+                    <li><strong>2 atrasos acima de 15min</strong> = Congelamento do aumento</li>
+                    <li><strong>Substituição</strong> = Titular perde progressão ao retornar</li>
+                </ul>
+            </div>
+
+            <div class="rules-box" style="background-color: #1f3d2a; border-left-color: #25D366;">
+                <h3>✅ Requisitos para Progressão</h3>
+                <ul>
+                    <li><strong>Pontualidade:</strong> Chegar 30 minutos antes das 20h</li>
+                    <li><strong>Assiduidade:</strong> Presença em todas as etapas</li>
+                    <li><strong>Profissionalismo:</strong> Conduta exemplar durante o evento</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsabilidades -->
+    <div class="section" style="background-color: #1a2520;">
+        <div class="container">
+            <h2>RESPONSABILIDADES DO DEALER</h2>
+            <div class="benefits-grid" style="max-width: 900px; margin: 40px auto;">
+                <div class="benefit-card">
+                    <p>Organizar stacks e mesa antes das 20h</p>
+                </div>
+                <div class="benefit-card">
+                    <p>Gerir rebuys e add-ons com ficha de controle</p>
+                </div>
+                <div class="benefit-card">
+                    <p>Autoridade máxima nas decisões de mesa</p>
+                </div>
+                <div class="benefit-card">
+                    <p>Desligar corretamente o computador ao final</p>
+                </div>
+                <div class="benefit-card">
+                    <p>Fotografar e enviar pontuações</p>
+                </div>
+                <div class="benefit-card">
+                    <p>Guardar fichas, baralhos e equipamentos</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Capilé -->
+    <div class="section">
+        <div class="container">
+            <h2>SOBRE O CAPILÉ (GORJETA)</h2>
+            <p>O capilé é voluntário e opcional. A organização não interfere nem cobra. Qualquer acordo é particular entre jogador e dealer.</p>
+        </div>
+    </div>
+
+    <!-- CTA Final -->
+    <div class="section" style="background: linear-gradient(135deg, #d4a121 0%, #f0b929 100%); color: #192218;">
+        <div class="container" style="text-align: center;">
+            <h2 style="color: #192218;">REGULAMENTO COMPLETO</h2>
+            <p style="color: #192218; font-size: 1.2rem; margin-bottom: 30px;">Consulte todas as regras e detalhes do Poker de Quinta</p>
+            <a href="https://pokerdequinta.github.io/regulamento/" target="_blank" class="btn" style="background-color: #192218; color: #d4a121;">📋 Ver Regulamento Completo</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Poker de Quinta - Desde 2015</p>
+        <p>© 2026 - Todos os direitos reservados</p>
+    </footer>
+
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/5541987210685" class="whatsapp-btn" target="_blank">
+        <svg class="whatsapp-icon" viewBox="0 0 32 32" fill="white">
+            <path d="M16 0C7.164 0 0 7.163 0 16c0 2.826.736 5.483 2.02 7.782L.094 30.93l7.378-1.937A15.903 15.903 0 0016 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm0 29.455c-2.467 0-4.826-.663-6.862-1.906l-.492-.288-5.094 1.336 1.36-4.968-.316-.51A13.417 13.417 0 012.545 16C2.545 8.567 8.567 2.545 16 2.545S29.455 8.567 29.455 16 23.433 29.455 16 29.455z"/>
+            <path d="M23.838 19.872c-.335-.168-1.985-.978-2.292-1.09-.307-.11-.53-.168-.753.168-.223.336-.865 1.09-1.06 1.313-.195.224-.39.252-.726.084-.335-.168-1.417-.522-2.698-1.665-1-.889-1.675-1.987-1.87-2.322-.195-.336-.02-.517.147-.684.151-.15.335-.392.503-.587.168-.196.224-.336.336-.56.112-.223.056-.418-.028-.587-.084-.168-.753-1.814-1.032-2.485-.27-.653-.545-.565-.753-.575h-.642c-.223 0-.587.084-.893.418-.307.336-1.172 1.146-1.172 2.794s1.2 3.24 1.368 3.463c.168.224 2.365 3.614 5.733 5.067.8.346 1.425.552 1.912.707.804.256 1.537.22 2.116.133.645-.097 1.985-.812 2.265-1.596.28-.783.28-1.455.196-1.596-.084-.14-.307-.224-.642-.392z"/>
+        </svg>
+        Contato
+    </a>
+
+    <script>
+        // Dados do gráfico
+        const etapas = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+        const valores = [180, 193, 207, 222, 238, 255, 263, 271, 279, 288, 297, 306, 315];
+
+        // Configuração do gráfico
+        const ctx = document.getElementById('progressionChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: etapas,
+                datasets: [{
+                    label: 'Valor da Diária (R$)',
+                    data: valores,
+                    backgroundColor: 'rgba(212, 161, 33, 0.2)',
+                    borderColor: '#d4a121',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#d4a121',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            color: '#fff',
+                            font: {
+                                size: 14,
+                                family: 'Roboto'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#192218',
+                        titleColor: '#d4a121',
+                        bodyColor: '#fff',
+                        borderColor: '#d4a121',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                return 'R$ ' + context.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 170,
+                        max: 330,
+                        ticks: {
+                            color: '#fff',
+                            callback: function(value) {
+                                return 'R$ ' + value;
+                            },
+                            font: {
+                                family: 'Roboto'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#fff',
+                            font: {
+                                family: 'Roboto'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Etapas',
+                            color: '#d4a121',
+                            font: {
+                                size: 14,
+                                family: 'Roboto',
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

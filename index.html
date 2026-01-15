@@ -382,7 +382,7 @@
     <div class="section">
         <div class="container">
             <div class="bonus-gold">
-                <h3>🏆 BÔNUS GOLD 🏆</h3>
+                <h3 style="font-size: 1.5rem;">🏆 BÔNUS GOLD 🏆</h3>
                 <p style="font-size: 1.2rem; color: #192218;">Complete as 13 etapas sem faltas e receba <strong>R$ 200,00 extras</strong> na última etapa!</p>
                 <div class="total">
                     Total na Temporada: R$ 3.495,00
@@ -400,7 +400,7 @@
                 <div class="benefit-card">
                     <div class="icon">📈</div>
                     <h4>Remuneração Escalável</h4>
-                    <p>Quanto mais etapas, mais você ganha</p>
+                    <p>Quanto mais etapas estiver presente, mais você ganha</p>
                 </div>
                 <div class="benefit-card">
                     <div class="icon">💰</div>
@@ -410,7 +410,7 @@
                 <div class="benefit-card">
                     <div class="icon">🏆</div>
                     <h4>Bônus Gold</h4>
-                    <p>R$ 200 extras por assiduidade 100%</p>
+                    <p>R$ 200 extras por assiduidade no fim do ano! 100%</p>
                 </div>
                 <div class="benefit-card">
                     <div class="icon">🍽️</div>
@@ -420,7 +420,7 @@
                 <div class="benefit-card">
                     <div class="icon">⚖️</div>
                     <h4>Respeito Total</h4>
-                    <p>Autoridade máxima na mesa</p>
+                    <p>Vc é Autoridade máxima na mesa</p>
                 </div>
                 <div class="benefit-card">
                     <div class="icon">💳</div>
@@ -433,14 +433,14 @@
                     <p>Zero tolerância a desrespeito</p>
                 </div>
                 <div class="benefit-card">
-                    <div class="icon">⏸️</div>
+                    <div class="icon">🎉</div>
                     <h4>Resenha e Diversão</h4>
                     <p>Ambiente descontraído e amigável</p>
                 </div>
                 <div class="benefit-card">
                     <div class="icon">🥤</div>
                     <h4>Bebidas Inclusas</h4>
-                    <p>Bebidas sem álcool à vontade com parcimônia</p>
+                    <p>Bebidas sem álcool à vontade com parcimônia é só pedir pra organização</p>
                 </div>
             </div>
         </div>
@@ -455,7 +455,7 @@
                 <ul>
                     <li><strong>Qualquer falta</strong> = Reset para R$ 180,00</li>
                     <li><strong>2 atrasos acima de 15min</strong> = Congelamento do aumento</li>
-                    <li><strong>Substituição</strong> = Titular perde progressão ao retornar</li>
+                    <li><strong>Substituição</strong> = Vc perde a progressão ao retornar, mas se na próxima etapa vier o jogo continua.</li>
                 </ul>
             </div>
 
@@ -550,6 +550,10 @@
 
         // Configuração do gráfico
         const ctx = document.getElementById('progressionChart').getContext('2d');
+        
+        // Detectar se é mobile
+        const isMobile = window.innerWidth <= 768;
+        
         const chart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -563,8 +567,8 @@
                     pointBackgroundColor: '#d4a121',
                     pointBorderColor: '#fff',
                     pointBorderWidth: 2,
-                    pointRadius: 6,
-                    pointHoverRadius: 8,
+                    pointRadius: isMobile ? 4 : 6,
+                    pointHoverRadius: isMobile ? 6 : 8,
                     tension: 0.3,
                     fill: true
                 }]
@@ -574,11 +578,11 @@
                 maintainAspectRatio: true,
                 plugins: {
                     legend: {
-                        display: true,
+                        display: !isMobile,
                         labels: {
                             color: '#fff',
                             font: {
-                                size: 14,
+                                size: isMobile ? 11 : 14,
                                 family: 'Roboto'
                             }
                         }
@@ -589,6 +593,13 @@
                         bodyColor: '#fff',
                         borderColor: '#d4a121',
                         borderWidth: 1,
+                        titleFont: {
+                            size: isMobile ? 12 : 14
+                        },
+                        bodyFont: {
+                            size: isMobile ? 11 : 13
+                        },
+                        padding: isMobile ? 8 : 12,
                         callbacks: {
                             label: function(context) {
                                 return 'R$ ' + context.parsed.y.toFixed(2);
@@ -607,8 +618,10 @@
                                 return 'R$ ' + value;
                             },
                             font: {
-                                family: 'Roboto'
-                            }
+                                family: 'Roboto',
+                                size: isMobile ? 10 : 12
+                            },
+                            maxTicksLimit: isMobile ? 6 : 8
                         },
                         grid: {
                             color: 'rgba(255, 255, 255, 0.1)'
@@ -618,14 +631,17 @@
                         ticks: {
                             color: '#fff',
                             font: {
-                                family: 'Roboto'
-                            }
+                                family: 'Roboto',
+                                size: isMobile ? 10 : 12
+                            },
+                            maxRotation: isMobile ? 0 : 0,
+                            minRotation: 0
                         },
                         grid: {
                             color: 'rgba(255, 255, 255, 0.1)'
                         },
                         title: {
-                            display: true,
+                            display: !isMobile,
                             text: 'Etapas',
                             color: '#d4a121',
                             font: {
